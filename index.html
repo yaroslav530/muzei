@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный музей искусства</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #1a252f;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--accent);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 8rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent);
+        }
+
+        .exhibits {
+            padding: 5rem 0;
+            background-color: white;
+        }
+
+        .exhibit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .exhibit-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .exhibit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .exhibit-img {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .exhibit-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .exhibit-card:hover .exhibit-img img {
+            transform: scale(1.1);
+        }
+
+        .exhibit-content {
+            padding: 1.5rem;
+        }
+
+        .exhibit-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .exhibit-content p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .read-more i {
+            margin-left: 5px;
+            transition: var(--transition);
+        }
+
+        .read-more:hover {
+            color: var(--accent);
+        }
+
+        .read-more:hover i {
+            transform: translateX(5px);
+        }
+
+        .video-section {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f5f7fa, #e4e8ed);
+        }
+
+        .video-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 500px;
+            display: block;
+        }
+
+        .resources {
+            padding: 5rem 0;
+            background-color: white;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .resource-card {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .resource-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        .resource-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .resource-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-column ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-column ul li a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 0.8rem;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .video-container iframe {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 5rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .exhibit-grid, .resources-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .word{
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-landmark" ></i>
+                    <div class="word">
+                        Исторический музей
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#exhibits">Экспонаты</a></li>
+                        <li><a href="#video">Видео</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1 class="fade-in">Виртуальный музей</br>"Спецотряд ВЕСТ: невидимий фронт"</h1>
+           
+            <p class="fade-in">Откройте для себя мир искусства через интерактивные экспонаты, уникальные видео материалы и образовательные ресурсы</p>
+            <a href="#exhibits" class="btn fade-in">Исследовать</a>
+        </div>
+    </section>
+
+<section id="exhibits" class="exhibits">
+    <div class="container">
+        <div class="section-title">
+            <h2>Наши экспонаты</h2>
+        </div>
+        <div class="exhibit-grid">
+            <!-- Первая строка - 3 карточки -->
+            <div class="exhibit-card fade-in">
+                <div class="exhibit-img">
+                    <img src="лицавест.jpg" alt="Лица отряда Вест">
+                </div>
+                <div class="exhibit-content">
+                    <h3>Лица отряда "Вест"</h3>
+                    <p>Здесь оживают истории героев. В этом разделе вы познакомитесь с бесстрашными бойцами и командирами отряда - не просто с их именами, а с их судьбами, характерами и ролью в общем деле.</p>
+                    <a href="#" class="read-more">Подробнее <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="exhibit-card fade-in">
+                <div class="exhibit-img">
+                    <img src="карта.jpg" alt="География подвига">
+                </div>
+                <div class="exhibit-content">
+                    <h3>География подвига</h3>
+                    <p>Интерактивная карта, на которой каждый маршрут - это нить опасной операции. Проследите путь отряда по Белоруссии и Польше, чтобы понять масштаб их действий в тылу врага.</p>
+                    <a href="https://view.genially.com/68da3e9851ea414951c283f8/interactive-content-karta-operacij-specotryada-vest-1943-1944gg" class="read-more">Подробнее <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="exhibit-card fade-in">
+                <div class="exhibit-img">
+                    <img src="отвага.jpg" alt="Современное искусство">
+                </div>
+                <div class="exhibit-content">
+                    <h3>Подвиги и награды</h3>
+                    <p>Раздел, где каждая награда обретает голос. Узнайте, за какие конкретные диверсии, разведку и спасение жизней бойцы «Веста» были представлены к государственным наградам.</p>
+                    <a href="#" class="read-more">Подробнее <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Вторая строка - 2 карточки, центрированные -->
+            <div class="exhibit-card fade-in centered-card">
+                <div class="exhibit-img">
+                    <img src="ленат.jpg" alt="Лица отряда Вест">
+                </div>
+                <div class="exhibit-content">
+                    <h3>Хроника спецотряда («Лента времени»)</h3>
+                    <p>От первого до последнего дня войны. Этот раздел шаг за шагом проведет вас по главным вехам существования отряда - от формирования до победного завершения его миссии.</p>
+                    <a href="#" class="read-more">Подробнее <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <div class="exhibit-card fade-in centered-card">
+                <div class="exhibit-img">
+                    <img src="бд.jpg" alt="География подвига">
+                </div>
+                <div class="exhibit-content">
+                    <h3>Исследовательский раздел/база данных</h3>
+                    <p>Для тех, кто хочет знать больше. Здесь собраны рассекреченные документы, оперативные сводки и фотоархивы - уникальная база для историков и всех, кто интересуется правдой о войне.</p>
+                    <a href="https://view.genially.com/68da3e9851ea414951c283f8/interactive-content-karta-operacij-specotryada-vest-1943-1944gg" class="read-more">Подробнее <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.exhibit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    justify-items: center;
+}
+
+/* Контейнер для центрирования последних двух карточек */
+.exhibit-grid::after {
+    content: '';
+    grid-column: 1 / -1;
+}
+
+.centered-card {
+    grid-column: span 1;
+}
+
+/* Для центрирования двух карточек в последней строке */
+@media (min-width: 768px) {
+    .exhibit-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Последние две карточки занимают 2 колонки из 3 и центрируются */
+    .centered-card:nth-last-child(2) {
+        grid-column: 2 / 3;
+    }
+    
+    .centered-card:last-child {
+        grid-column: 3 / 4;
+    }
+    
+    /* Альтернативный вариант - обе карточки в центре */
+    .exhibit-grid:has(.centered-card:nth-last-child(2)) {
+        justify-content: center;
+    }
+    
+    .centered-card:nth-last-child(2) {
+        grid-column: 2 / 3;
+    }
+    
+    .centered-card:last-child {
+        grid-column: 3 / 4;
+    }
+}
+
+/* Альтернативное решение с flexbox */
+.exhibit-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+}
+
+.exhibit-card {
+    flex: 0 1 calc(33.333% - 20px);
+    min-width: 300px;
+    max-width: 400px;
+}
+
+/* Для мобильных устройств */
+@media (max-width: 767px) {
+    .exhibit-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .exhibit-card {
+        flex: 0 1 100%;
+    }
+}
+
+/* Стили карточек */
+.exhibit-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.exhibit-card:hover {
+    transform: translateY(-5px);
+}
+
+.exhibit-img {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.exhibit-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.exhibit-content {
+    padding: 20px;
+}
+</style>
+
+    <section id="video" class="video-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Видеоматериал</h2>
+            </div>
+            <div class="video-container fade-in">
+
+                <iframe src="леон агабеков (2).mp4"frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Музей истории</h3>
+                    <p>Невидимый фронт стал видимым,От легенд НКВД — до партизанской славы.Сквозь время и километры —Мы сохранили правду для вас.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Быстрые ссылки</h3>
+                    <ul>
+                        <li><a href="#exhibits">Экспонаты</a></li>
+                        <li><a href="#video">Видео</a></li>
+                        <li><a href="#resources">Ресурсы</a></li>
+                        <li><a href="#">Билеты</a></li>
+                        <li><a href="#">События</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i>ул. Берёзовая 2 г.Гродно</li>
+                        <li><i class="fas fa-phone"></i>(80152)712247</li>
+                        <li><i class="fas fa-envelope"></i>sch13@oktobrgrodno.gov.by</li>
+                        <li><i class="fas fa-clock"></i> Пн-Вс: 10:00 - 20:00</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <img src="1ю.png">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Анимация появления элементов при прокрутке
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeInOnScroll = function() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const elementVisible = 150;
+                    
+                    if (elementTop < window.innerHeight - elementVisible) {
+                        element.style.opacity = "1";
+                        element.style.transform = "translateY(0)";
+                    }
+                });
+            };
+            
+            // Изначально скрываем элементы
+            fadeElements.forEach(element => {
+                element.style.opacity = "0";
+                element.style.transform = "translateY(20px)";
+                element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+            });
+            
+            window.addEventListener('scroll', fadeInOnScroll);
+            // Вызываем сразу для элементов, которые уже в поле зрения
+            fadeInOnScroll();
+            
+            // Плавная прокрутка для навигационных ссылок
+            document.querySelectorAll('nav a, .btn[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if(targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
